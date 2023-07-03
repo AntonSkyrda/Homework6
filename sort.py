@@ -1,3 +1,4 @@
+import sys
 import os
 import shutil
 
@@ -77,12 +78,32 @@ def sort_folder(folder):
                 # Зберігаємо розширення у множині невідомих розширень
                 unknown_extensions.add(file_extension)
 
-            # Видаляємо порожні папки
-            for dir in dirs:
-                dir_path = os.path.join(root, dir)
-                if not os.listdir(dir_path):
-                    os.rmdir(dir_path)
+    # Видаляємо порожні папки
+    for root, dirs, _ in os.walk(folder, topdown=False):
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            if not os.listdir(dir_path):
+                os.rmdir(dir_path)
 
     return known_extensions, unknown_extensions
 
 
+if __name__ == '__main__':
+    # Перевіряємо, чи був переданий аргумент командного рядка
+    if len(sys.argv) < 2:
+        print('Потрібно вказати ім\'я папки!')
+        sys.exit(1)
+
+    folder_name = sys.argv[1]
+
+    # Перевіряємо, чи існує папка з вказаним ім'ям
+    if not os.path.exists(folder_name):
+        print('Папку не знайдено!')
+        sys.exit(1)
+
+    # Викликаємо функцію сортування та перейменування папки
+    known_ext, unknown_ext = sort_folder(folder_name)
+
+    print('Сортування завершено.')
+    print('Відомі розширення:', known_ext)
+    print('Невідомі розширення:', unknown_ext)
